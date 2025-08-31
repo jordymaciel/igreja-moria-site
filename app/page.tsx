@@ -14,14 +14,17 @@ type NewsItem = {
   imageUrl: string;
 };
 
-type IndividualScore = {
-  name: string;
+// Tipos atualizados para a Gincana
+type ActivityScore = {
+  activity: string;
   score: number;
 };
 
 type Team = {
   name: string;
+  leader: string;
   members: string[];
+  scores: ActivityScore[];
 };
 
 type Page = 'home' | 'sobre' | 'gincana';
@@ -58,25 +61,32 @@ const mockNews: NewsItem[] = [
   },
 ];
 
-const individualScores: IndividualScore[] = [
-    { name: 'Rebeca', score: 2 },
-    { name: 'Arielly', score: 1 },
-    { name: 'Larissa', score: 2 },
-    { name: 'Juan', score: 2 },
-    { name: 'Francisco', score: 2 },
-    { name: 'Geovane', score: 1 },
-    { name: 'Fernanda', score: 1 },
-    { name: 'Guilherme', score: 1 },
-    { name: 'Alamys', score: 1 },
-    { name: 'Sophia', score: 1 },
+// --- DADOS DA GINCANA ATUALIZADOS ---
+const gincanaTeams: Team[] = [
+    {
+        name: 'Abençoados',
+        leader: 'Juan Gabriell',
+        members: ['Sophia', 'Geovane', 'Haniel', 'Pedro', 'Arielly', 'Brendow', 'Larissa', 'Arthur', 'Julia'],
+        scores: [
+            { activity: 'Vôlei', score: 0 },
+            { activity: 'Futebol', score: 0 },
+            { activity: 'Natação', score: 1 },
+            { activity: 'Perguntas e Respostas', score: 1 },
+        ]
+    },
+    {
+        name: 'Remidos',
+        leader: 'Carlos Gabryell',
+        members: ['Alamys', 'Israel', 'Jordy', 'Francisco', 'Guilherme/Fernanda', 'Fernando/Giovana', 'Bernardo', 'Rebeca'],
+        scores: [
+            { activity: 'Vôlei', score: 1 },
+            { activity: 'Futebol', score: 1 },
+            { activity: 'Natação', score: 0 },
+            { activity: 'Perguntas e Respostas', score: 0 },
+        ]
+    }
 ];
 
-const teams: Team[] = [
-    { name: 'Equipe Rebeca, Arielly, Larissa', members: ['Rebeca', 'Arielly', 'Larissa'] },
-    { name: 'Equipe Juan e Geovane', members: ['Juan', 'Geovane'] },
-    { name: 'Equipe Fernanda e Guilherme', members: ['Fernanda', 'Guilherme'] },
-    { name: 'Equipe Alamys e Francisco', members: ['Alamys', 'Francisco'] },
-];
 
 // --- COMPONENTES ---
 
@@ -177,14 +187,16 @@ const NewsCard = ({ news }: { news: NewsItem }) => (
   </div>
 );
 
-// Componente para a Página da Gincana
+// Componente para a Página da Gincana (Atualizado)
 const GincanaPage = () => {
     const calculateTeamScore = (team: Team) => {
-        return team.members.reduce((total, memberName) => {
-            const member = individualScores.find(p => p.name === memberName);
-            return total + (member ? member.score : 0);
-        }, 0);
+        return team.scores.reduce((total, item) => total + item.score, 0);
     };
+
+    const teamScores = gincanaTeams.map(team => ({
+        name: team.name,
+        score: calculateTeamScore(team)
+    }));
 
     return (
         <div className="animate-fade-in">
@@ -197,43 +209,50 @@ const GincanaPage = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Pontos das Equipes */}
-                <div className="bg-white/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
-                    <h2 className="text-3xl font-black text-center mb-6" style={{ fontFamily: "'Anton', sans-serif" }}>PONTOS DAS EQUIPES</h2>
-                    <div className="space-y-4">
-                        {teams.map(team => (
-                            <div key={team.name} className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-                                <div>
-                                    <p className="font-bold text-lg text-gray-800">{team.name}</p>
-                                    <p className="text-sm text-gray-500">{team.members.join(', ')}</p>
-                                </div>
-                                <div className="bg-black text-white rounded-full flex items-center justify-center w-16 h-16">
-                                    <span className="text-2xl font-bold">{calculateTeamScore(team)}</span>
-                                </div>
+            {/* Placar Geral */}
+            <div className="bg-white/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200 mb-12">
+                 <h2 className="text-3xl font-black text-center mb-6" style={{ fontFamily: "'Anton', sans-serif" }}>PLACAR GERAL</h2>
+                 <div className="flex justify-around items-center text-center">
+                    {teamScores.map((team, index) => (
+                        <React.Fragment key={team.name}>
+                            <div>
+                                <p className="text-2xl md:text-3xl font-bold">{team.name}</p>
+                                <p className="text-6xl md:text-7xl font-black" style={{ fontFamily: "'Anton', sans-serif" }}>{team.score}</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            {index === 0 && <div className="text-4xl font-light text-gray-400">vs</div>}
+                        </React.Fragment>
+                    ))}
+                 </div>
+            </div>
 
-                {/* Contagem Individual */}
-                <div className="bg-white/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
-                    <h2 className="text-3xl font-black text-center mb-6" style={{ fontFamily: "'Anton', sans-serif" }}>CONTAGEM INDIVIDUAL</h2>
-                     <ul className="space-y-3">
-                        {individualScores.sort((a, b) => b.score - a.score).map(player => (
-                            <li key={player.name} className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
-                                <span className="font-semibold text-gray-700">{player.name}</span>
-                                <div className="flex items-center gap-2 font-bold text-lg text-black">
-                                   {player.score} <Star className="text-yellow-400" size={20}/>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+            {/* Detalhes das Equipes */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                {gincanaTeams.map(team => (
+                     <div key={team.name} className="bg-white/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
+                        <h3 className="text-3xl font-black mb-1" style={{ fontFamily: "'Anton', sans-serif" }}>{team.name}</h3>
+                        <p className="text-md text-gray-600 mb-4">Líder: {team.leader}</p>
+                        
+                        <h4 className="font-bold text-lg mb-2 mt-6">Pontuação Detalhada:</h4>
+                        <ul className="space-y-2 mb-6">
+                            {team.scores.map(item => (
+                                 <li key={item.activity} className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
+                                    <span className="font-semibold text-gray-700">{item.activity}</span>
+                                    <span className="font-bold text-lg text-black">{item.score}</span>
+                                </li>
+                            ))}
+                        </ul>
+
+                        <h4 className="font-bold text-lg mb-2 mt-6">Membros:</h4>
+                        <p className="text-gray-700 leading-relaxed bg-white/70 p-3 rounded-lg">
+                            {team.members.join(', ')}
+                        </p>
+                     </div>
+                ))}
             </div>
         </div>
     );
 };
+
 
 // Componente para o Conteúdo da Página Home
 const HomePageContent = () => (
@@ -275,7 +294,7 @@ export default function App() {
 
   return (
     <div style={{ backgroundColor: colors.background, color: colors.text, fontFamily: "'Inter', sans-serif" }} className="min-h-screen">
-      <style jsx global>{`
+      <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
