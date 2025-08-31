@@ -14,7 +14,7 @@ type NewsItem = {
   imageUrl: string;
 };
 
-// Tipos atualizados para a Gincana
+// Tipos para a Gincana
 type ActivityScore = {
   activity: string;
   score: number;
@@ -25,6 +25,11 @@ type Team = {
   leader: string;
   members: string[];
   scores: ActivityScore[];
+};
+
+type IndividualScore = {
+    name: string;
+    score: number;
 };
 
 type Page = 'home' | 'sobre' | 'gincana';
@@ -85,6 +90,19 @@ const gincanaTeams: Team[] = [
             { activity: 'Perguntas e Respostas', score: 0 },
         ]
     }
+];
+
+const individualScores: IndividualScore[] = [
+    { name: 'Rebeca', score: 2 },
+    { name: 'Arielly', score: 1 },
+    { name: 'Larissa', score: 2 },
+    { name: 'Juan', score: 2 },
+    { name: 'Francisco', score: 2 },
+    { name: 'Geovane', score: 1 },
+    { name: 'Fernanda', score: 1 },
+    { name: 'Guilherme', score: 1 },
+    { name: 'Alamys', score: 1 },
+    { name: 'Sophia', score: 1 },
 ];
 
 
@@ -249,6 +267,21 @@ const GincanaPage = () => {
                      </div>
                 ))}
             </div>
+            
+            {/* Contagem Individual */}
+            <div className="mt-12 bg-white/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-gray-200">
+                <h2 className="text-3xl font-black text-center mb-6" style={{ fontFamily: "'Anton', sans-serif" }}>CONTAGEM INDIVIDUAL</h2>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {individualScores.sort((a, b) => b.score - a.score).map(player => (
+                        <li key={player.name} className="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
+                            <span className="font-semibold text-gray-700">{player.name}</span>
+                            <div className="flex items-center gap-2 font-bold text-lg text-black">
+                                {player.score} <Star className="text-yellow-400" size={20}/>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };
@@ -319,4 +352,3 @@ export default function App() {
     </div>
   );
 }
-
