@@ -166,7 +166,9 @@ const WelcomePage = ({ user }: { user: UserProfile | null }) => (
         <h1 className="text-6xl md:text-8xl font-black tracking-tighter" style={{ fontFamily: "'Anton', sans-serif" }}>
             BEM-VINDO(A)!
         </h1>
-        <p className="mt-4 text-2xl text-gray-800">{user?.name || 'Visitante'}</p>
+        <p className="mt-4 text-2xl text-gray-800">
+            {user ? `${user.role} ${user.name}` : 'Visitante'}
+        </p>
         <p className="mt-2 text-lg text-gray-600">É ótimo ter você aqui. Explore as seções usando o menu acima.</p>
     </div>
 );
